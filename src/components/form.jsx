@@ -146,19 +146,22 @@ const DesignEstimationForm = () => {
         ) {
           clearInterval(interval);
           setResult(
-            execution.data.resultData.runData.Code1[0].data || execution
+            execution.data.resultData.runData["AI Agent_old"][0].data.main[0][0]
+              .json.output || execution
           );
           sessionStorage.setItem(
             "estimationData",
             JSON.stringify(
-              execution.data.resultData.runData.Code1[0].data || execution
+              execution.data.resultData.runData["AI Agent_old"][0].data
+                .main[0][0].json.output || execution
             )
           );
           setStatus("✅ Completed!");
           setLoading(false);
           console.log(
             "Result: ",
-            execution.data.resultData.runData.Code1[0].data
+            execution.data.resultData.runData["AI Agent_old"][0].data.main[0][0]
+              .json.output
           );
           // window.location.href = "/estimations";
         } else {
