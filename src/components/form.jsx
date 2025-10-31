@@ -138,6 +138,7 @@ const DesignEstimationForm = () => {
         }
 
         const execution = await response.json();
+        console.log("execution:", execution);
 
         if (
           execution.finished === true ||
