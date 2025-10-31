@@ -146,13 +146,17 @@ const DesignEstimationForm = () => {
           execution.stoppedAt !== null
         ) {
           clearInterval(interval);
-          setResult(execution.data || execution);
+          setResult(
+            execution.data.resultData.runData.Code1[0].data || execution
+          );
           sessionStorage.setItem(
             "estimationData",
-            JSON.stringify(execution.data || execution)
+            JSON.stringify(
+              execution.data.resultData.runData.Code1[0].data || execution
+            )
           );
           setStatus("✅ Completed!");
-          // window.location.href = "/estimations";
+          window.location.href = "/estimations";
         } else {
           setStatus(`Running... ${execution.status || "processing"}`);
         }
