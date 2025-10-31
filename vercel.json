@@ -9,7 +9,7 @@
     },
     {
       "source": "/:path(api/.*)",
-      "destination": "/api"
+      "destination": "/api/$1"
     }
   ]
 }
