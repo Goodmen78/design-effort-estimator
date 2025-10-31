@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       }
     );
 
-    const data = await n8nResponse;
+    const data = n8nResponse.json();
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({
