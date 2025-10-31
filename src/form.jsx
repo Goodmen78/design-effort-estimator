@@ -95,24 +95,23 @@ const DesignEstimationForm = () => {
     setMessage("");
 
     try {
-      // const response = await fetch(WEBHOOK_URL, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(formData),
-      // });
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-      // if (!response.ok) {
-      //   console.log("There is error");
-      //   throw new Error(`HTTP error! status: ${response.status}`);
-      // }
+      if (!response.ok) {
+        console.log("There is error");
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      // const result = await response.json();
-      // setExecutionId(result.jobId);
+      const result = await response.json();
+      setExecutionId(result.jobId);
 
-      // setStatus("Workflow started ✅");
+      setStatus("Workflow started ✅");
       // Start polling
-      // pollExecution(result.jobId);
-      pollExecution("993");
+      pollExecution(result.jobId);
 
       // Store the raw response
       // sessionStorage.setItem("estimationData", JSON.stringify(result));
