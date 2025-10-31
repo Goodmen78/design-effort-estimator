@@ -109,6 +109,7 @@ const DesignEstimationForm = () => {
 
       const result = await response.json();
       setExecutionId(result.jobId);
+      console.log("JOB ID: ", result.jobId);
 
       setStatus("Workflow started ✅");
       // Start polling
@@ -127,37 +128,52 @@ const DesignEstimationForm = () => {
   const pollExecution = (id) => {
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/executions/${id}`);
+        // Make sure no double slash
+        const url = `/api/executions/${id}`;
+        console.log("Polling URL:", url);
 
-        // Check if response is ok
+        const response = await fetch(url);
+
+        // Log the actual response
+        console.log("Response status:", response.status);
+        console.log("Response headers:", response.headers.get("content-type"));
+
         if (!response.ok) {
           console.error("Response not ok:", response.status);
+          const errorText = await response.text();
+          console.error("Error response:", errorText);
           return;
         }
 
         const execution = await response.json();
-
         console.log("Execution data:", execution);
 
-        if (execution.finished === true || execution.status === "success") {
+        // Check various possible completion indicators
+        if (
+          execution.finished === true ||
+          execution.status === "success" ||
+          execution.status === "completed"
+        ) {
           clearInterval(interval);
-          setResult(execution.data);
+          setResult(execution.data || execution);
           sessionStorage.setItem(
             "estimationData",
-            JSON.stringify(execution.data)
+            JSON.stringify(execution.data || execution)
           );
           setStatus("✅ Completed!");
-          window.location.href = "/estimations";
+          setTimeout(() => {
+            window.location.href = "/estimations";
+          }, 1000);
         } else {
-          setStatus("Running... still processing");
+          setStatus(`Running... ${execution.status || "processing"}`);
         }
       } catch (error) {
         console.error("Polling error:", error);
-        setStatus("Error checking status");
+        setStatus(`Error: ${error.message}`);
       }
     }, 5000);
 
-    // Don't forget to return cleanup
+    // Cleanup on unmount
     return () => clearInterval(interval);
   };
 
