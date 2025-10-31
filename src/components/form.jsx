@@ -163,7 +163,7 @@ const DesignEstimationForm = () => {
             execution.data.resultData.runData["AI Agent_old"][0].data.main[0][0]
               .json.output
           );
-          // window.location.href = "/estimations";
+          window.location.href = "/estimations";
         } else {
           setStatus(`Running... ${execution.status || "processing"}`);
         }
