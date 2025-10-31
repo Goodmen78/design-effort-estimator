@@ -129,9 +129,10 @@ const DesignEstimationForm = () => {
     const interval = setInterval(async () => {
       try {
         // Use query parameter: /api/executions?id=123
-        const response = await fetch(`/api/executions?id=${id}`);
-
+        const response = await fetch(`/api/executions/${id}`);
+        console.log("Response:", response);
         console.log("Response status:", response.status);
+        console.log("Response body:", response.body);
 
         if (!response.ok) {
           const errorText = await response.text();
