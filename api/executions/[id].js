@@ -1,6 +1,15 @@
-// api/executions/[id].js
 export default async function handler(req, res) {
   const { id } = req.query;
+
+  // Add CORS headers first
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Handle preflight
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
 
   try {
     const response = await fetch(
@@ -14,22 +23,19 @@ export default async function handler(req, res) {
       }
     );
 
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: `n8n API returned ${response.status}`,
+      });
+    }
+
     const data = await response.json();
-
-    // ADD THIS: Log everything to see what's happening
-    console.log("Status:", response.status);
-    console.log("Response:", JSON.stringify(data, null, 2));
-
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET");
-
-    // Return everything including status
-    res.status(200).json({
-      httpStatus: response.status,
-      data: data,
-    });
+    return res.status(200).json(data);
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching execution:", error);
+    return res.status(500).json({
+      error: "Failed to fetch execution",
+      message: error.message,
+    });
   }
 }

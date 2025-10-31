@@ -126,32 +126,39 @@ const DesignEstimationForm = () => {
 
   const pollExecution = (id) => {
     const interval = setInterval(async () => {
-      const response = await fetch(`/api/executions/${id}`);
-      const result = await response.json();
+      try {
+        const response = await fetch(`/api/executions/${id}`);
 
-      // ADD THIS: See what we're actually receiving
-      console.log("Full response:", result);
+        // Check if response is ok
+        if (!response.ok) {
+          console.error("Response not ok:", response.status);
+          return;
+        }
 
-      const execution = result.data; // Note: we wrapped it in 'data'
+        const execution = await response.json();
 
-      console.log("Execution object:", execution);
-      console.log("Status:", execution?.status);
-      console.log("Finished:", execution?.finished);
+        console.log("Execution data:", execution);
 
-      // n8n might use 'finished: true' instead of 'status: success'
-      if (execution?.finished === true || execution?.status === "success") {
-        clearInterval(interval);
-        setResult(execution.data || execution);
-        sessionStorage.setItem(
-          "estimationData",
-          JSON.stringify(execution.data || execution)
-        );
-        setStatus("✅ Completed!");
-        window.location.href = "/estimations";
-      } else {
-        setStatus(`Running... ${execution?.status || "processing"}`);
+        if (execution.finished === true || execution.status === "success") {
+          clearInterval(interval);
+          setResult(execution.data);
+          sessionStorage.setItem(
+            "estimationData",
+            JSON.stringify(execution.data)
+          );
+          setStatus("✅ Completed!");
+          window.location.href = "/estimations";
+        } else {
+          setStatus("Running... still processing");
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+        setStatus("Error checking status");
       }
     }, 5000);
+
+    // Don't forget to return cleanup
+    return () => clearInterval(interval);
   };
 
   return (
