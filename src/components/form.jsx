@@ -138,7 +138,6 @@ const DesignEstimationForm = () => {
         }
 
         const execution = await response.json();
-        console.log("Execution data:", execution);
 
         if (
           execution.finished === true ||
@@ -157,7 +156,11 @@ const DesignEstimationForm = () => {
           );
           setStatus("✅ Completed!");
           setLoading(false);
-          window.location.href = "/estimations";
+          console.log(
+            "Result: ",
+            execution.data.resultData.runData.Code1[0].data
+          );
+          // window.location.href = "/estimations";
         } else {
           setStatus(`Running... ${execution.status || "processing"}`);
         }
