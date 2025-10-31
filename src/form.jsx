@@ -18,7 +18,12 @@ const DesignEstimationForm = () => {
     screenCount: 0,
     domain: "",
     industry: "",
-    phases: ["Immersion", "Discovery", "Foundational Design", "Detailed Design & Delivery"],
+    phases: [
+      "Immersion",
+      "Discovery",
+      "Foundational Design",
+      "Detailed Design & Delivery",
+    ],
     branding: "No",
     accessibility: "No",
     multilingual: "No",
@@ -29,6 +34,11 @@ const DesignEstimationForm = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Configuration for polling
+  const [status, setStatus] = useState("idle");
+  const [result, setResult] = useState(null);
+  const [executionId, setExecutionId] = useState(null);
 
   const togglePlatformDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -85,35 +95,60 @@ const DesignEstimationForm = () => {
     setMessage("");
 
     try {
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
+      // const response = await fetch(WEBHOOK_URL, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(formData),
+      // });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   console.log("There is error");
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
 
-      const result = await response.json();
-      
+      // const result = await response.json();
+      // setExecutionId(result.jobId);
+
+      // setStatus("Workflow started ✅");
+      // Start polling
+      // pollExecution(result.jobId);
+      pollExecution("993");
+
       // Store the raw response
-      sessionStorage.setItem("estimationData", JSON.stringify(result));
-      
+      // sessionStorage.setItem("estimationData", JSON.stringify(result));
+
       // Navigate to results page
-      window.location.href = '/estimations';
-      
     } catch (error) {
       setMessage("Error sending estimation: " + error.message);
       setLoading(false);
     }
   };
 
+  const pollExecution = (id) => {
+    const interval = setInterval(async () => {
+      const response = await fetch(`/api/executions/${id}`);
+      const execution = await response.json();
+
+      if (execution.status === "success") {
+        clearInterval(interval);
+        setResult(execution.data.resultData); // Adjust based on real payload
+        sessionStorage.setItem(
+          "estimationData",
+          JSON.stringify(execution.data.resultData)
+        );
+        setStatus("✅ Completed!");
+        window.location.href = "/estimations";
+      } else {
+        setStatus("Running... still processing");
+      }
+    }, 5000); // poll every 5 seconds
+  };
+
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit}>
         <h1>Design Estimation Form</h1>
-        
+
         <label>Project Name *</label>
         <input
           type="text"
@@ -136,18 +171,20 @@ const DesignEstimationForm = () => {
           </div>
           {dropdownOpen && (
             <div className="dropdown-content">
-              {["Responsive Website", "Android App", "iOS App", "All"].map((p) => (
-                <label key={p}>
-                  <input
-                    type="checkbox"
-                    name="platform"
-                    value={p}
-                    checked={formData.platform.includes(p)}
-                    onChange={handleChange}
-                  />{" "}
-                  {p}
-                </label>
-              ))}
+              {["Responsive Website", "Android App", "iOS App", "All"].map(
+                (p) => (
+                  <label key={p}>
+                    <input
+                      type="checkbox"
+                      name="platform"
+                      value={p}
+                      checked={formData.platform.includes(p)}
+                      onChange={handleChange}
+                    />{" "}
+                    {p}
+                  </label>
+                )
+              )}
             </div>
           )}
         </div>
@@ -270,9 +307,9 @@ const DesignEstimationForm = () => {
         <div className="checkbox-group">
           {[
             "Immersion",
-            "Discovery", 
+            "Discovery",
             "Foundational Design",
-            "Detailed Design & Delivery"
+            "Detailed Design & Delivery",
           ].map((phase) => (
             <label key={phase}>
               <input
@@ -340,9 +377,15 @@ const DesignEstimationForm = () => {
         <button type="submit" disabled={loading}>
           {loading ? "Processing..." : "Generate Estimation"}
         </button>
-        
+
         {message && (
-          <div className={`message ${message.includes('error') || message.includes('Failed') ? 'error' : 'success'}`}>
+          <div
+            className={`message ${
+              message.includes("error") || message.includes("Failed")
+                ? "error"
+                : "success"
+            }`}
+          >
             {message}
           </div>
         )}
