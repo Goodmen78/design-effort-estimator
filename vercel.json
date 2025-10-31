@@ -2,14 +2,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/:path((?!api/).*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/:path(api/.*)",
-      "destination": "/api/$1"
-    }
+  "routes": [
+    { "src": "^/api/(.*)$", "dest": "/api/$1" },
+    { "src": ".*", "dest": "/dist/index.html" }
   ]
 }
