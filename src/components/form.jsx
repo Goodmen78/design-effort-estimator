@@ -128,31 +128,24 @@ const DesignEstimationForm = () => {
   const pollExecution = (id) => {
     const interval = setInterval(async () => {
       try {
-        // Make sure no double slash
-        const url = `/api/executions/${id}`;
-        console.log("Polling URL:", url);
+        // Use query parameter: /api/executions?id=123
+        const response = await fetch(`/api/executions?id=${id}`);
 
-        const response = await fetch(url);
-
-        // Log the actual response
         console.log("Response status:", response.status);
-        console.log("Response headers:", response.headers.get("content-type"));
 
         if (!response.ok) {
-          console.error("Response not ok:", response.status);
           const errorText = await response.text();
-          console.error("Error response:", errorText);
+          console.error("Error:", errorText);
           return;
         }
 
         const execution = await response.json();
         console.log("Execution data:", execution);
 
-        // Check various possible completion indicators
         if (
           execution.finished === true ||
           execution.status === "success" ||
-          execution.status === "completed"
+          execution.stoppedAt !== null
         ) {
           clearInterval(interval);
           setResult(execution.data || execution);
@@ -161,9 +154,7 @@ const DesignEstimationForm = () => {
             JSON.stringify(execution.data || execution)
           );
           setStatus("✅ Completed!");
-          setTimeout(() => {
-            window.location.href = "/estimations";
-          }, 1000);
+          window.location.href = "/estimations";
         } else {
           setStatus(`Running... ${execution.status || "processing"}`);
         }
@@ -173,7 +164,6 @@ const DesignEstimationForm = () => {
       }
     }, 5000);
 
-    // Cleanup on unmount
     return () => clearInterval(interval);
   };
 

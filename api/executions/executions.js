@@ -1,14 +1,12 @@
-// api/executions/[id].js
+// api/executions.js
 export default async function handler(req, res) {
-  // Enable CORS
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   const { id } = req.query;
@@ -30,10 +28,16 @@ export default async function handler(req, res) {
       }
     );
 
+    if (!n8nResponse.ok) {
+      return res.status(n8nResponse.status).json({
+        error: `n8n API error: ${n8nResponse.status}`,
+      });
+    }
+
     const data = await n8nResponse.json();
-    res.status(200).json(data);
+    return res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to fetch execution",
       message: error.message,
     });
