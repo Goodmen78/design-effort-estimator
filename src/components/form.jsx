@@ -130,9 +130,6 @@ const DesignEstimationForm = () => {
       try {
         // Use query parameter: /api/executions?id=123
         const response = await fetch(`/api/executions/${id}`);
-        console.log("Response:", response);
-        console.log("Response status:", response.status);
-        console.log("Response body:", response.body);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -140,8 +137,7 @@ const DesignEstimationForm = () => {
           return;
         }
 
-        // const execution = await response.json();
-        const execution = await response;
+        const execution = await response.json();
         console.log("Execution data:", execution);
 
         if (

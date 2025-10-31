@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
   try {
     const n8nResponse = await fetch(
-      `https://uxlad.app.n8n.cloud/api/v1/executions/${id}`,
+      `https://uxlad.app.n8n.cloud/api/v1/executions/${id}?includeData=true`,
       {
         method: "GET",
         headers: {
