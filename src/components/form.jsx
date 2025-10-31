@@ -156,7 +156,7 @@ const DesignEstimationForm = () => {
             JSON.stringify(execution.data || execution)
           );
           setStatus("✅ Completed!");
-          window.location.href = "/estimations";
+          // window.location.href = "/estimations";
         } else {
           setStatus(`Running... ${execution.status || "processing"}`);
         }
