@@ -127,7 +127,8 @@ const DesignEstimationForm = () => {
   const pollExecution = (id) => {
     const interval = setInterval(async () => {
       const response = await fetch(`/api/executions/${id}`);
-      const execution = await response.json();
+      console.log("RESPONSE", await response);
+      const execution = await response;
 
       if (execution.status === "success") {
         clearInterval(interval);

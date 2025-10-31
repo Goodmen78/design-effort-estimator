@@ -13,9 +13,7 @@ export default async function handler(req, res) {
         },
       }
     );
-    console.log("RESPONSE:", response);
     const data = await response.json();
-    console.log("DATA:", data);
 
     // Enable CORS for your frontend
     res.setHeader("Access-Control-Allow-Origin", "*");
