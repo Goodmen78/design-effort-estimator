@@ -13,13 +13,23 @@ export default async function handler(req, res) {
         },
       }
     );
+
     const data = await response.json();
 
-    // Enable CORS for your frontend
+    // ADD THIS: Log everything to see what's happening
+    console.log("Status:", response.status);
+    console.log("Response:", JSON.stringify(data, null, 2));
+
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET");
-    res.status(response.status).json(data);
+
+    // Return everything including status
+    res.status(200).json({
+      httpStatus: response.status,
+      data: data,
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch execution status" });
+    console.error("Error:", error);
+    res.status(500).json({ error: error.message });
   }
 }

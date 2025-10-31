@@ -127,22 +127,31 @@ const DesignEstimationForm = () => {
   const pollExecution = (id) => {
     const interval = setInterval(async () => {
       const response = await fetch(`/api/executions/${id}`);
-      console.log("RESPONSE", await response);
-      const execution = await response;
+      const result = await response.json();
 
-      if (execution.status === "success") {
+      // ADD THIS: See what we're actually receiving
+      console.log("Full response:", result);
+
+      const execution = result.data; // Note: we wrapped it in 'data'
+
+      console.log("Execution object:", execution);
+      console.log("Status:", execution?.status);
+      console.log("Finished:", execution?.finished);
+
+      // n8n might use 'finished: true' instead of 'status: success'
+      if (execution?.finished === true || execution?.status === "success") {
         clearInterval(interval);
-        setResult(execution.data.resultData); // Adjust based on real payload
+        setResult(execution.data || execution);
         sessionStorage.setItem(
           "estimationData",
-          JSON.stringify(execution.data.resultData)
+          JSON.stringify(execution.data || execution)
         );
         setStatus("✅ Completed!");
         window.location.href = "/estimations";
       } else {
-        setStatus("Running... still processing");
+        setStatus(`Running... ${execution?.status || "processing"}`);
       }
-    }, 5000); // poll every 5 seconds
+    }, 5000);
   };
 
   return (
