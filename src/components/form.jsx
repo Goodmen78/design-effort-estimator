@@ -125,11 +125,21 @@ const DesignEstimationForm = () => {
     }
   };
 
-  const pollExecution = (id) => {
+  const pollExecution = async (id) => {
     const interval = setInterval(async () => {
       try {
         // Use query parameter: /api/executions?id=123
-        const response = await fetch(`/api/executions/${id}`);
+        const response = await fetch(
+          `https://uxlad.app.n8n.cloud/api/v1/executions/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjZGI3ODQ0OS0wODFjLTQ0NWYtYjA5MC02YmRlZDc1MDdiMzAiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzYxODQ5MjMyfQ.xByLCfgYxuTE4yeIjHdTVpKWryUAEY8IVmM9p1fUu7s",
+            },
+          }
+        );
         console.log("Response:", response);
         console.log("Response status:", response.status);
         console.log("Response body:", response.body);

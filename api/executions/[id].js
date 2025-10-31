@@ -10,7 +10,9 @@ export default function handler(req, res) {
       break;
 
     case "POST":
-      res.status(200).json({ message: `POST request received`, body: req.body, id });
+      res
+        .status(200)
+        .json({ message: `POST request received`, body: req.body, id });
       break;
 
     default:
