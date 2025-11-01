@@ -96,11 +96,14 @@ const DesignEstimationForm = () => {
     setMessage("");
 
     try {
-      const response = await fetch(process.env.WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://uxlad.app.n8n.cloud/webhook/f3e58583-27ea-4654-8cf3-862b4a468b04",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) {
         console.log("There is error");
