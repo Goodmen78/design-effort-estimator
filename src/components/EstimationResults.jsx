@@ -675,7 +675,7 @@ font-semibold text-xs uppercase tracking-wider`}
                           {role.FoundationalDesignHours}h
                         </td>
                         <td className="p-3 align-top">
-                          {role.DetailedDesign & DeliveryHours}h
+                          {role["DetailedDesign&DeliveryHours"]}h
                         </td>
                         <td className="p-3 align-top">
                           <strong>{role.totalHours}h</strong>
