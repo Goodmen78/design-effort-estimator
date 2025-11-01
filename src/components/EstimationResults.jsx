@@ -488,11 +488,11 @@ const FoodyardEstimationResults = () => {
                       >
                         Variants
                       </th>
-                      <th
+                      {/* <th
                         className={`bg-gradient-to-r ${colorScheme.primary} text-white p-4 text-left font-semibold text-xs uppercase tracking-wider`}
                       >
                         Priority
-                      </th>
+                      </th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -517,7 +517,7 @@ const FoodyardEstimationResults = () => {
                           {screen.designEffortHours}h
                         </td>
                         <td className="p-3 align-top">{screen.variantCount}</td>
-                        <td className="p-3 align-top">
+                        {/* <td className="p-3 align-top">
                           <span
                             className={`px-2 py-1 rounded text-xs font-medium border ${getPriorityStyles(
                               screen.priority
@@ -525,7 +525,7 @@ const FoodyardEstimationResults = () => {
                           >
                             {screen.priority?.toUpperCase()}
                           </span>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>

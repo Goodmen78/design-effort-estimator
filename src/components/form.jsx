@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./form.css";
 
 const DesignEstimationForm = () => {
-  const WEBHOOK_URL =
-    "https://uxlad.app.n8n.cloud/webhook-test/f3e58583-27ea-4654-8cf3-862b4a468b04";
+  // const WEBHOOK_URL =
+  //   "https://uxlad.app.n8n.cloud/webhook/f3e58583-27ea-4654-8cf3-862b4a468b04";
 
   const [formData, setFormData] = useState({
     projectName: "",
@@ -96,7 +96,7 @@ const DesignEstimationForm = () => {
     setMessage("");
 
     try {
-      const response = await fetch(WEBHOOK_URL, {
+      const response = await fetch(process.env.WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -158,11 +158,6 @@ const DesignEstimationForm = () => {
           );
           setStatus("✅ Completed!");
           setLoading(false);
-          console.log(
-            "Result: ",
-            execution.data.resultData.runData["AI Agent_old"][0].data.main[0][0]
-              .json.output
-          );
           window.location.href = "/estimations";
         } else {
           setStatus(`Running... ${execution.status || "processing"}`);
