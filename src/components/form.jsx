@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./form.css";
 
 const DesignEstimationForm = () => {
-  const WEBHOOK_URL = "https://uxlad.app.n8n.cloud/webhook/f3e58583-27ea-4654-8cf3-862b4a468b04"; 
+  // const WEBHOOK_URL =
+  //   "https://uxlad.app.n8n.cloud/webhook/f3e58583-27ea-4654-8cf3-862b4a468b04";
 
   const [formData, setFormData] = useState({
     projectName: "",
@@ -18,7 +19,12 @@ const DesignEstimationForm = () => {
     screenCount: 0,
     domain: "",
     industry: "",
-    phases: ["Immersion", "Discovery", "Foundational Design", "Detailed Design & Delivery"],
+    phases: [
+      "Immersion",
+      "Discovery",
+      "Foundational Design",
+      "Detailed Design & Delivery",
+    ],
     branding: "No",
     accessibility: "No",
     multilingual: "No",
@@ -29,6 +35,11 @@ const DesignEstimationForm = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Configuration for polling
+  const [status, setStatus] = useState("idle");
+  const [result, setResult] = useState(null);
+  const [executionId, setExecutionId] = useState(null);
 
   const togglePlatformDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -85,35 +96,89 @@ const DesignEstimationForm = () => {
     setMessage("");
 
     try {
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
+      const response = await fetch(
+        "https://uxlad.app.n8n.cloud/webhook/f3e58583-27ea-4654-8cf3-862b4a468b04",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) {
+        console.log("There is error");
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      
+      setExecutionId(result.jobId);
+      console.log("JOB ID: ", result.jobId);
+
+      setStatus("Workflow started ✅");
+      // Start polling
+      pollExecution(result.jobId);
+
       // Store the raw response
-      sessionStorage.setItem("estimationData", JSON.stringify(result));
-      
+      // sessionStorage.setItem("estimationData", JSON.stringify(result));
+
       // Navigate to results page
-      window.location.href = '/estimations';
-      
     } catch (error) {
       setMessage("Error sending estimation: " + error.message);
       setLoading(false);
     }
   };
 
+  const pollExecution = async (id) => {
+    const interval = setInterval(async () => {
+      try {
+        // Use query parameter: /api/executions?id=123
+        const response = await fetch(`/api/executions/${id}`);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error:", errorText);
+          return;
+        }
+
+        const execution = await response.json();
+
+        if (
+          execution.finished === true ||
+          execution.status === "success" ||
+          execution.stoppedAt !== null
+        ) {
+          clearInterval(interval);
+          setResult(
+            execution.data.resultData.runData["AI Agent_old"][0].data.main[0][0]
+              .json.output || execution
+          );
+          sessionStorage.setItem(
+            "estimationData",
+            JSON.stringify(
+              execution.data.resultData.runData["AI Agent_old"][0].data
+                .main[0][0].json.output || execution
+            )
+          );
+          setStatus("✅ Completed!");
+          setLoading(false);
+          window.location.href = "/estimations";
+        } else {
+          setStatus(`Running... ${execution.status || "processing"}`);
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+        setStatus(`Error: ${error.message}`);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  };
+
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit}>
         <h1>Design Estimation Form</h1>
-        
+
         <label>Project Name *</label>
         <input
           type="text"
@@ -136,18 +201,20 @@ const DesignEstimationForm = () => {
           </div>
           {dropdownOpen && (
             <div className="dropdown-content">
-              {["Responsive Website", "Android App", "iOS App", "All"].map((p) => (
-                <label key={p}>
-                  <input
-                    type="checkbox"
-                    name="platform"
-                    value={p}
-                    checked={formData.platform.includes(p)}
-                    onChange={handleChange}
-                  />{" "}
-                  {p}
-                </label>
-              ))}
+              {["Responsive Website", "Android App", "iOS App", "All"].map(
+                (p) => (
+                  <label key={p}>
+                    <input
+                      type="checkbox"
+                      name="platform"
+                      value={p}
+                      checked={formData.platform.includes(p)}
+                      onChange={handleChange}
+                    />{" "}
+                    {p}
+                  </label>
+                )
+              )}
             </div>
           )}
         </div>
@@ -270,9 +337,9 @@ const DesignEstimationForm = () => {
         <div className="checkbox-group">
           {[
             "Immersion",
-            "Discovery", 
+            "Discovery",
             "Foundational Design",
-            "Detailed Design & Delivery"
+            "Detailed Design & Delivery",
           ].map((phase) => (
             <label key={phase}>
               <input
@@ -340,9 +407,15 @@ const DesignEstimationForm = () => {
         <button type="submit" disabled={loading}>
           {loading ? "Processing..." : "Generate Estimation"}
         </button>
-        
+
         {message && (
-          <div className={`message ${message.includes('error') || message.includes('Failed') ? 'error' : 'success'}`}>
+          <div
+            className={`message ${
+              message.includes("error") || message.includes("Failed")
+                ? "error"
+                : "success"
+            }`}
+          >
             {message}
           </div>
         )}
