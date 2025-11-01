@@ -193,7 +193,7 @@ const FoodyardEstimationResults = () => {
   const totalPersonDays =
     merged?.totalPersonDays ||
     estimationData.teamComposition?.reduce(
-      (sum, member) => sum + (parseInt(member.totalDays) || 0),
+      (sum, member) => sum + (parseFloat(member.totalDays) || 0),
       0
     ) ||
     420;
@@ -204,7 +204,7 @@ const FoodyardEstimationResults = () => {
     merged?.totalScreens || estimationData.screenBreakdown?.length || 35;
   const totalHours =
     estimationData.complexitySummary?.reduce(
-      (sum, c) => sum + (parseInt(c.totalHours) || 0),
+      (sum, c) => sum + (parseFloat(c.totalHours) || 0),
       0
     ) || 270;
   const projectName = merged?.projectName || "Design Project";
@@ -446,7 +446,8 @@ const FoodyardEstimationResults = () => {
                 >
                   <div className="text-3xl font-bold mb-1">
                     {estimationData.screenBreakdown.reduce(
-                      (sum, screen) => sum + (parseInt(screen.variants) || 1),
+                      (sum, screen) =>
+                        sum + (parseInt(screen.variantCount) || 1),
                       0
                     )}
                   </div>
@@ -515,7 +516,7 @@ const FoodyardEstimationResults = () => {
                         <td className="p-3 align-top">
                           {screen.designEffortHours}h
                         </td>
-                        <td className="p-3 align-top">{screen.variants}</td>
+                        <td className="p-3 align-top">{screen.variantCount}</td>
                         <td className="p-3 align-top">
                           <span
                             className={`px-2 py-1 rounded text-xs font-medium border ${getPriorityStyles(
@@ -594,7 +595,7 @@ const FoodyardEstimationResults = () => {
                         <td className="p-3 align-top">
                           {c.avgEffortPerScreen}h
                         </td>
-                        <td className="p-3 align-top">{c.totalVariants}</td>
+                        <td className="p-3 align-top">{c.variantCount}</td>
                         <td className="p-3 align-top">
                           <strong>{c.totalHours}h</strong>
                         </td>
@@ -625,6 +626,12 @@ const FoodyardEstimationResults = () => {
                       >
                         Role
                       </th>
+                      {/* FIXED HEADERS */}
+                      <th
+                        className={`bg-gradient-to-r ${colorScheme.primary} text-white p-4 text-left font-semibold text-xs uppercase tracking-wider`}
+                      >
+                        Immersion Hours
+                      </th>
                       <th
                         className={`bg-gradient-to-r ${colorScheme.primary} text-white p-4 text-left font-semibold text-xs uppercase tracking-wider`}
                       >
@@ -633,20 +640,16 @@ const FoodyardEstimationResults = () => {
                       <th
                         className={`bg-gradient-to-r ${colorScheme.primary} text-white p-4 text-left font-semibold text-xs uppercase tracking-wider`}
                       >
-                        Wireframe Hours
+                        Foundational Design Hours
                       </th>
                       <th
                         className={`bg-gradient-to-r ${colorScheme.primary} text-white p-4 text-left font-semibold text-xs uppercase tracking-wider`}
                       >
-                        Design Hours
+                        Detailed Design & Delivery Hours
                       </th>
                       <th
-                        className={`bg-gradient-to-r ${colorScheme.primary} text-white p-4 text-left font-semibold text-xs uppercase tracking-wider`}
-                      >
-                        Prototype Hours
-                      </th>
-                      <th
-                        className={`bg-gradient-to-r ${colorScheme.primary} text-white p-4 text-left font-semibold text-xs uppercase tracking-wider`}
+                        className={`bg-gradient-to-r ${colorScheme.primary} text-white p-4 text-left 
+font-semibold text-xs uppercase tracking-wider`}
                       >
                         Total Hours
                       </th>
@@ -661,15 +664,18 @@ const FoodyardEstimationResults = () => {
                         <td className="p-3 align-top">
                           <strong>{role.role}</strong>
                         </td>
+                        {/* FIXED DATA ACCESSORS (case-sensitive) */}
                         <td className="p-3 align-top">
-                          {role.discoveryHours}h
+                          {role.ImmersionHours}h
                         </td>
                         <td className="p-3 align-top">
-                          {role.wireframeHours}h
+                          {role.DiscoveryHours}h
                         </td>
-                        <td className="p-3 align-top">{role.designHours}h</td>
                         <td className="p-3 align-top">
-                          {role.prototypeHours}h
+                          {role.FoundationalDesignHours}h
+                        </td>
+                        <td className="p-3 align-top">
+                          {role.DetailedDesign & DeliveryHours}h
                         </td>
                         <td className="p-3 align-top">
                           <strong>{role.totalHours}h</strong>
