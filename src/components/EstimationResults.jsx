@@ -226,16 +226,18 @@ const FoodyardEstimationResults = () => {
   const generateGanttData = () => {
     if (!estimationData.weeklyRoadmap) return [];
 
-    const roles = [
-      "Design Director",
-      "Senior UX Designer",
-      "UI Designer",
-      "UX Researcher",
-      "Content Writer",
-      "Graphic Designer",
-      "Accessibility Specialist",
-      "Design PM",
-    ];
+    // const roles = [
+    //   "Design Director",
+    //   "Senior UX Designer",
+    //   "UI Designer",
+    //   "UX Researcher",
+    //   "Content Writer",
+    //   "Graphic Designer",
+    //   "Accessibility Specialist",
+    //   "Design PM",
+    // ];
+    const roles =
+      estimationData.teamComposition?.map((member) => member.role) || [];
     const phaseColors = {
       Immersion: { bg: "bg-purple-500", label: "IMM" },
       Discovery: { bg: "bg-blue-500", label: "DISC" },
